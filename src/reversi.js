@@ -11,8 +11,10 @@ const rev = {
 	},
 
 	generateBoard: function(rows,columns,initialCellValue){
-		const A=rev.repeat(initialCellValue,(rows*columns));
-		return A;	
+		if(initialCellValue)
+			{return rev.repeat(initialCellVaue, rows * columns);}
+		else
+			{return rev.repeat(" ", rows * columns);}
 	},
 
 	rowColToIndex: function(board, rowNumber, columnNumber){
