@@ -57,16 +57,16 @@ const rev = {
 		const A=['A','B','C','D','E','F','G','H','I','J','K','L','M','N','O','P','Q','R','S','T','U','V','W','X','Y','Z'];
 		const B=['1','2','3','4','5','6','7','8','9','10','11','12','13','14','15','16','17','18','19','20','21','22','23','24','25','26'];
 		var b;
-		if (A.includes(algebraicNotation.charAt(0))==false || algebraicNotation.charAt(1)==undefined){
+		if (A.includes(algebraicNotation.charAt(0))===false || algebraicNotation.charAt(1)===undefined){
 			return undefined;
 		}
 		if (algebraicNotation.length>3)
 			return undefined;
-		if (B.includes(algebraicNotation.charAt(1))==false)
+		if (B.includes(algebraicNotation.charAt(1))===false)
 			return undefined;
 		var b="";
-		if (algebraicNotation.length==3){
-			if (B.includes(algebraicNotation.charAt(1))==true && B.includes(algebraicNotation.charAt(2))==true){
+		if (algebraicNotation.length===3){
+			if (B.includes(algebraicNotation.charAt(1))===true && B.includes(algebraicNotation.charAt(2))===true){
 				b=algebraicNotation.charAt(1)+algebraicNotation.charAt(2);
 			}
 			else{

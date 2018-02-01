@@ -14,8 +14,10 @@ if (process.argv[2]) {
 			const player = object.boardPreset.playerLetter;
 			const computer = (player === "X") ? "O" : "X";
 			const board = [...object.boardPreset.board];
+			const playersTurn = (player === "X") ? true: false;
 			const scriptedMovesPlayer = [...object.scriptedMoves.player];
 			const scriptedMovesComputer = [...object.scriptedMoves.computer];
+			playscript(board,player,computer,playersTurn,scriptedMovesPlayer,scriptedMovesComputer);
 
 		}
 	});
@@ -170,6 +172,164 @@ function play(board, player, computer, playersturn){
 			playersturn=!playersturn
 		}
 		return board;
+}
+
+function playscript(board, player, computer, playersTurn,playerscriptedmoves,computerscriptedmoves){
+	console.log(rev.boardToString);
+	let playerpass=0;
+	let computerpass=0;
+	if (playersTurn){
+		while (playerscriptedmoves.length!=0&&computerscriptedmoves.length!=0){
+			if (playerscript(board,player,playerscriptedmoves[0])===-1){
+				const validMoves = rev.getValidMoves(board, player);
+				if(validMoves.length === 0){
+					console.log("No valid moves.");
+					playerpass++;
+				}
+				else{
+					while (true){
+						while (true){
+							move = readlineSync.question("What's your move? (in algebraic notation)");
+							if (validinput(move)==false)
+								console.log("Invalid format");
+							else{
+								break;
+							}
+						}	
+						if (rev.isValidMoveAlgebraicNotation(board,player,move)==false){
+							console.log("Invalid Move. Make sure it's formatted, targets empty space, and flips opponent piece(s)");	
+						}
+						if (rev.isValidMoveAlgebraicNotation(board,player,move)==true)
+							break;
+					}
+					board = rev.placeLetters(board, player, move);
+					board = rev.flipCells(board, rev.getCellsToFlip(board, rev.algebraicToRowCol(move).row, rev.algebraicToRowCol(move).col));
+					console.log(rev.boardToString(board));
+					playerscriptedmoves.shift();
+
+				}
+			}
+			else{
+				board=playerscript(board,player,playerscriptedmoves[0])
+				playerscriptedmoves.shift();
+			}
+			if (computerscript(board,player,computerscriptedmoves[0])===-1){
+				compvalidmoves=rev.getValidMoves(board,computer);
+				if (compvalidmoves.length==0){
+					console.log("No valid moves for computer");
+					comppass++;
+				}
+				else{
+					compmove=compvalidmoves[Math.floor(Math.random()*compvalidmoves.length)];
+					board = rev.setBoardCell(board, computer, compmove[0], compmove[1]);
+					board = rev.flipCells(board, rev.getCellsToFlip(board, compmove[0], compmove[1]));
+					console.log(rev.boardToString(board));
+					comppass = 0;
+					computerscriptedmoves.shift();
+				}
+
+			}
+			else{
+				board=computerscript(board,computer,computerscriptedmoves[0]);
+				computerscriptedmoves.shift();
+			}
+		}
+	}
+	if (!playersTurn){
+		while (playerscriptedmoves.length!=0&&computerscriptedmoves.length!=0){
+			if (computerscript(board,player,computerscriptedmoves[0])===-1){
+				compvalidmoves=rev.getValidMoves(board,computer);
+				if (compvalidmoves.length==0){
+					console.log("No valid moves for computer");
+					comppass++;
+				}
+				else{
+					compmove=compvalidmoves[Math.floor(Math.random()*compvalidmoves.length)];
+					board = rev.setBoardCell(board, computer, compmove[0], compmove[1]);
+					board = rev.flipCells(board, rev.getCellsToFlip(board, compmove[0], compmove[1]));
+					console.log(rev.boardToString(board));
+					comppass = 0;
+					computerscriptedmoves.shift();
+				}
+
+			}
+			else{
+				board=computerscript(board,computer,computerscriptedmoves[0]);
+				computerscriptedmoves.shift();
+			}
+			if (playerscript(board,player,playerscriptedmoves[0])===-1){
+				const validMoves = rev.getValidMoves(board, player);
+				if(validMoves.length === 0){
+					console.log("No valid moves.");
+					playerpass++;
+				}
+				else{
+					while (true){
+						while (true){
+							move = readlineSync.question("What's your move? (in algebraic notation)");
+							if (validinput(move)==false)
+								console.log("Invalid format");
+							else{
+								break;
+							}
+						}	
+						if (rev.isValidMoveAlgebraicNotation(board,player,move)==false){
+							console.log("Invalid Move. Make sure it's formatted, targets empty space, and flips opponent piece(s)");	
+						}
+						if (rev.isValidMoveAlgebraicNotation(board,player,move)==true)
+							break;
+					}
+					board = rev.placeLetters(board, player, move);
+					board = rev.flipCells(board, rev.getCellsToFlip(board, rev.algebraicToRowCol(move).row, rev.algebraicToRowCol(move).col));
+					console.log(rev.boardToString(board));
+					playerscriptedmoves.shift();
+
+				}
+			}
+			else{
+				board=playerscript(board,player,playerscriptedmoves[0])
+				playerscriptedmoves.shift();
+			}
+		}
+	}
+	board=play(board,player,computer,playerturn);
+	if (player==='X'){
+		if (rev.getLetterCounts(board).X>rev.getLetterCounts(board).O)
+			console.log("You won");
+		else{
+			console.log("You lost");
+		}
+	}
+
+	if (player==='O'){
+		if (rev.getLetterCounts(board).X<rev.getLetterCounts(board).O)
+			console.log("You won");
+		else{
+			console.log("You lost");
+		}
+	}
+}
+
+function playerscript(board, player, playermove){
+	const move=rev.algebraicToRowCol(playermove);
+	if (rev.isValidMoveAlgebraicNotation(playermove)){
+		board=rev.setBoardCell(board,player,move.row,move.col);
+		board=rev.flipCells(board, rev.getCellsToFlip(board,move.row,move.col));
+		console.log(rev.boardToString(board))
+		return board;
+	}
+	return -1;
+}
+
+function computerscript(board,computer,computermove){
+	const move=rev.algebraicToRowCol(computermove);
+	if (rev.isValidMoveAlgebraicNotation(computermove)){
+		board=rev.setBoardCell(board,computer,move.row,move.col);
+		board=rev.flipCells(board, rev.getCellsToFlip(board,move.row,move.col));
+		console.log(rev.boardToString(board))
+		return board;
+	}
+	return -1;
 }
 
 
